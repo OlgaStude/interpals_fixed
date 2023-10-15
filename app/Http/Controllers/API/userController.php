@@ -1,0 +1,78 @@
+<?php
+
+namespace App\Http\Controllers\API;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\loginRequest;
+use App\Http\Requests\registrationRequest;
+use App\Models\Language;
+use App\Models\Language_s;
+use App\Models\User;
+use Illuminate\Contracts\Session\Session;
+use Illuminate\Database\QueryException;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+
+class userController extends Controller
+{
+    
+    public function register(registrationRequest $req){
+        
+        $req->file('pfp')->store('/profile_pics');
+        $pfp_name = $req->file('pfp')->hashName();
+        $user = User::create(array_merge($req->validated(), ['password' => Hash::make($req->password), 'pfp' => $pfp_name, 'lang_s' => $req->lang_s, 'lang_t' => $req->lang_t]));
+
+        if($user){
+           
+            Auth::login($user);
+            return response()->json(['status' => 200, 'message' => 'user is registreted!', 'user_id' => $user->id]);
+        }
+
+        return response()->json(['status' => 422, 'message' => 'user is failed to be registreted!']);
+
+    }
+
+    public function login(loginRequest $req)
+    {
+        $formFields = $req->only(['email', 'password']);
+        
+        
+        if (Auth::attempt($formFields)) {
+            $user = User::where("email", $formFields['email'])->get();
+            return response()->json(['status' => 200, 'message' => 'user is logged in!', 'user_id' => $user[0]->id]);
+        }
+        return response()->json(['status' => 422, 'message' => 'Неверная почта или пароль']);
+    }
+
+
+    public function logout(){
+
+        try{
+            Auth::logout();
+            return response()->json(['status' => 200, 'message' => 'user is logged out!']);
+            
+
+        } catch(QueryException $e){
+            return response()->json(['status' => 422, 'message' => $e]);
+        }
+
+
+    }
+
+
+    public function get_langs(){
+
+        return Language::all();
+
+
+    }
+
+    public function get_user($id)
+    {
+
+        return User::findOrFail($id);
+    }
+
+
+}
