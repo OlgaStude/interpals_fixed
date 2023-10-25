@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\commentsController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\postController;
 use Illuminate\Http\Request;
@@ -29,8 +30,9 @@ Route::get('/langs', [UserController::class, 'get_langs']);
 Route::get('/user/{id}', [UserController::class, 'get_user']);
 Route::get('/posts', [postController::class, 'getPosts']);
 Route::get('/posts/{id}', [postController::class, 'getPosts_by_user']);
-
 Route::post('/makepost', [postController::class, 'makePost']);
+
+Route::post('/makecomment', [commentsController::class, 'addComment']);
 
 
 Route::get('/restest', [postController::class, 'resourcetest']);

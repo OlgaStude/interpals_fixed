@@ -1,5 +1,6 @@
 <template>
-    <div class="container">
+    <div class="register_content">
+        <h1>Зарегестрироваться</h1>
         <form action="" enctype="multipart/form-data">
             <input type="text" id="name" v-model="name" placeholder="name">
             <strong>{{ errors.name }}</strong>
@@ -11,28 +12,137 @@
             <strong>{{ errors.password[0] }}</strong>
             <input type="password" id="password_confirmation" v-model="password_confirmation" placeholder="password_confirmation">
             <strong>{{ errors.password[1] }}</strong>
-            <input type="file" id="pfp" ref="pfp">
+            <label class="custom-file-upload input-file">
+            <input @change="show_name()" class="file_upload"  type="file" id="pfp" ref="pfp">
+                <span id="file_selected">{{ file_name }}</span>
+                </label>
             <strong>{{ errors.pfp }}</strong>
-            <p>Язык, который я хочу учить</p>
+            <p>Я хочу учить</p>
             <select @change="onChangeLang_s" name="" id="lang_s">
                 <option>Выберите язык</option>
                 <option v-for="lang of langs" :value="lang.nang_name">{{ lang.lang_name }}</option>
             </select>
-            {{ errors.lang_s }}
-            <p>Язык, на котором я могу говорить</p>
+            <strong>{{ errors.lang_s }}</strong>
+            <p>Я могу говорить</p>
             <select @change="onChangeLang_t" name="" id="lang_s">
                 <option>Выберите язык</option>
                 <option v-for="lang of langs" :value="lang.nang_name">{{ lang.lang_name }}</option>
             </select>
-            {{ errors.lang_t }}
-            <button type="submit" @click="register">Register</button>
+            <strong>{{ errors.lang_t }}</strong>
+            <button type="submit" @click="register">Зарегестрироваться</button>
+            <p class="to_login">Уже с нами? <router-link class="to_login" to="/login">Войдите</router-link>!</p>
         </form>
+        <img src="storage/imgs/map_simple.png" alt="">
     </div>
 </template>
+
+<style>
+
+@font-face {
+    font-family: "jejugothic";
+    src: url('storage/fonts/JejuGothic-Regular.ttf');
+}
+
+.register_content{
+        position: relative;
+        height: 1220px;
+        font-family: "jejugothic";
+    }
+        .register_content>*{
+            position: absolute;
+        }
+        .register_content h1{
+            font-size: 65px;
+            left: 611px;
+        }
+        .register_content>form{
+            position: absolute;
+            z-index: 1;
+            width: 580px;
+            left: 670px;
+            top: 130px;
+        }
+            .register_content>form input{
+                width: 100%;
+                height: 43px;
+                font-size: 32px;
+                padding-left: 13px;
+                border: 0;
+                border-bottom: 2px solid black;
+                background-color: rgb(240, 248, 255, 0);
+                margin-top: 28px;
+                margin-bottom: 4px;
+            }
+        .register_content>img{
+            position: absolute;
+            z-index: 0;
+        }
+        .file_upload{
+            display: none;
+        }
+        label, form button{
+            width: 100%;
+            height: 48px;
+            border: 2px solid black;
+            border-radius: 16px;
+            font-size: 32px;
+            color: #0D890D;
+            display: block;
+            text-align: center;
+            padding-top: 5px;
+            cursor: pointer;
+            margin-top: 28px;
+            margin-bottom: 4px;
+            box-sizing: border-box;
+            background-color: #fff;
+            margin-left: 7px;
+        }
+        .register_content>form p{
+            font-size: 32px;
+            margin-top: 32px;
+            line-height: 0;
+            margin-left: 7px;
+        }
+        select{
+            width: 100%;
+            height: 48px;
+            font-size: 32px;
+            padding-left: 19px;
+            padding-right: 19px;
+            border: 2px solid black;
+            border-radius: 16px;
+            -moz-appearance:none; /* Firefox */
+            -webkit-appearance:none; /* Safari and Chrome */
+            appearance:none;
+            margin-left: 7px;
+            margin-bottom: 4px;
+        }
+            select option{
+                width: 0px;
+                font-size: 14px;
+            }
+        form strong{
+            padding-left: 10px;
+            padding-top: 20px;
+            box-sizing: border-box;
+            color: #E24A6F;
+            font-size: 24px;
+        }
+
+        p.to_login{
+            padding-left: 105px;
+        }
+        .to_login, .to_login:visited{
+            color: black;
+            
+        }
+
+</style>
 
 
 <script>
 
+// $('.file_upload').bind('change', function() { var fileName = ''; fileName = $(this).val().split('\\'); $('#file_selected').html(fileName[fileName.length - 1]); if($('#file_selected').html() == ''){$('#file_selected').html('Выберете файл')} $('.custom-file-upload p').hide();})
     export default{
         name: 'Registration',
         data(){
@@ -54,13 +164,17 @@
                 },
                 langs: {},
                 lang_s: '',
-                lang_t: ''
+                lang_t: '',
+                file_name: 'Загрузите фото'
             }    
         }, created(){
             this.$axios.get('api/langs').then(response => {
                 this.langs = response.data;
             })
         }, methods: {
+            show_name(){
+                this.file_name = this.$refs.pfp.files[0].name
+            },
             register(e){
                 e.preventDefault();
                 this.errors = {

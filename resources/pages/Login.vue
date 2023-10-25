@@ -1,6 +1,9 @@
 <template>
-    <div class="container">
+    <div class="login_container">
+      <h1>Войти</h1>
+
       <form action="" enctype="multipart/form-data">
+        
         <input type="email" id="email" v-model="email" placeholder="email" />
         <strong>{{ errors.email }}</strong>
         <input
@@ -11,12 +14,73 @@
         />
         <strong>{{ errors.password }}</strong>
         <strong>{{ errors.unmatched }}</strong>
-        <button type="submit" @click="login">Register</button>
-      </form>
+        <button type="submit" @click="login">Войти</button>
+        <p class="to_login">Ещё не с нами? <router-link class="to_login" to="/registration">Зарегистрируйтесь</router-link>!</p>
+        </form>
+      <img src="storage/imgs/map_simple.png" alt="">
     </div>
   </template>
   
-  
+<style>
+@font-face {
+  font-family: "jejugothic";
+  src: url('storage/fonts/JejuGothic-Regular.ttf');
+}
+
+.login_container{
+      position: relative;
+      height: 1220px;
+      font-family: "jejugothic";
+  }
+
+  .login_container>*{
+    position: absolute;
+}
+.login_container h1{
+    font-size: 65px;
+    left: 854px;
+    top: 100px;
+}
+.login_container>form{
+    position: absolute;
+    z-index: 1;
+    width: 580px;
+    left: 670px;
+    top: 230px;
+    margin-top: 60px;
+}
+    .login_container>form input{
+        width: 100%;
+        height: 43px;
+        font-size: 32px;
+        padding-left: 13px;
+        border: 0;
+        border-bottom: 2px solid black;
+        background-color: rgb(240, 248, 255, 0);
+        margin-top: 38px;
+        margin-bottom: 4px;
+    }
+.login_container>img{
+    position: absolute;
+    z-index: 0;
+}
+.login_container>form p{
+  font-size: 24px;
+  margin-top: 32px;
+  margin-left: -30px;
+}
+
+form strong{
+  padding-left: 10px;
+  padding-top: 20px;
+  box-sizing: border-box;
+  color: #E24A6F;
+  font-size: 24px;
+}
+
+</style>
+
+
   <script>
   export default {
     name: "Home",

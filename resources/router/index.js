@@ -5,6 +5,7 @@ import Registration from '../pages/Registration.vue'
 import Login from '../pages/Login.vue'
 import UserPage from '../pages/UserPage.vue'
 import Dashboard from '../pages/Dashboard.vue'
+import Chat from '../pages/Chat.vue'
 
 export const routes = [
     {
@@ -31,6 +32,11 @@ export const routes = [
         name: 'Dashboard',
         path: '/dashboard',
         component: Dashboard
+    },
+    {
+        name: 'Chat',
+        path: '/chat',
+        component: Chat
     },
 ];
 

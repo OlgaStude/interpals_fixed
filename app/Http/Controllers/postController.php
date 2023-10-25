@@ -29,9 +29,20 @@ class postController extends Controller
     public function getPosts(){
 
         $posts = posts::join('users', 'users.id', '=', 'posts.users_id')
-        ->where('lang', '=', Auth::user()->lang_s)->orWhere('lang', '=', Auth::user()->lang_t)->orderBy('posts.id', 'desc')->get();
+        ->select(
+            'posts.id as id',
+            'posts.lang as lang',
+            'posts.text as text',
+            'posts.created_at as created_at',
+            'users.id as user_id',
+            'users.name as name',
+            'users.surname as surname',
+            'users.pfp as pfp'
+        )
+        ->where('lang', '=', Auth::user()->lang_s)->orWhere('lang', '=', Auth::user()->lang_t)
+        ->orderBy('posts.id', 'desc')->get();
 
-        return $posts;
+        return postResource::collection($posts);
 
     }
 
@@ -40,7 +51,9 @@ class postController extends Controller
 
         // $posts = posts::first();
         $posts = posts::join('users', 'users.id', '=', 'posts.users_id')
-        ->select('posts.id as id')->orderBy('posts.id', 'desc')->get();
+        ->select('posts.id as id', 'posts.lang as lang', 'posts.text as text', 'posts.created_at as created_at',
+            'users.id as user_id', 'users.name as name', 'users.surname as surname', 'users.pfp as pfp')
+        ->orderBy('posts.id', 'desc')->get();
 
         // return new postResourceCollection($posts);
         return postResource::collection($posts);

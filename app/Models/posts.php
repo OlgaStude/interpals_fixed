@@ -12,7 +12,8 @@ class posts extends Model
     protected $fillable = [
         'users_id',
         'lang',
-        'text'
+        'text',
+        'raiting'
     ];
 
     public function comments(){
