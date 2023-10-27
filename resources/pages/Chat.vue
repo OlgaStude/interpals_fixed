@@ -53,8 +53,8 @@
         </div>
     </div>
     <div class="buttom_form">
-        <textarea name="" id="" cols="30" rows="10"></textarea>
-        <button></button>
+        <textarea placeholder="Ваше сообщение здесь" name="" id="" cols="30" rows="10"></textarea>
+        <button>Отправить</button>
     </div>
   </template>
   
@@ -140,6 +140,33 @@
                     font-size: 22px;
                     margin-top: 20px;
                 }
+
+    .buttom_form{
+        height: 184px;
+        border-top: 2px solid black;
+        padding: 34px 170px;
+        box-sizing: border-box;
+        display: flex;
+        column-gap: 70px;
+    }
+        .buttom_form textarea{
+            height: 80px;
+            width: 887px;
+            padding: 10px 23px;
+            box-sizing: border-box;
+        }
+        .buttom_form button{
+            height: 80px;
+            width: 406px;
+            box-sizing: border-box;
+            color: #0D890D;
+            font-family: "jejugothic";
+            font-size: 32px;
+            background-color: #fff;
+            border: 2px solid black;
+            border-radius: 16px;
+            margin-top: 20px;
+        }
 
 
 </style>

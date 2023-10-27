@@ -6,6 +6,7 @@ import Login from '../pages/Login.vue'
 import UserPage from '../pages/UserPage.vue'
 import Dashboard from '../pages/Dashboard.vue'
 import Chat from '../pages/Chat.vue'
+import Possible_chats from '../pages/Possible_chats.vue'
 
 export const routes = [
     {
@@ -37,6 +38,11 @@ export const routes = [
         name: 'Chat',
         path: '/chat',
         component: Chat
+    },
+    {
+        name: 'Possible_chats',
+        path: '/youmaytalkto',
+        component: Possible_chats
     },
 ];
 

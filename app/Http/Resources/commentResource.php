@@ -2,10 +2,12 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Dislike;
 use App\Models\Like;
 use App\Models\User;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rules\Exists;
 
 class commentResource extends JsonResource
 {
@@ -21,12 +23,25 @@ class commentResource extends JsonResource
         $test = Like::where([
             ['comments_id', '=', $this->id],
             ['users_id', '=', Auth::user()->id]
-        ]);
+        ])->get();
 
-        if($test){
+
+        if(isset($test[0])){
             $liked = true;
         }else{
             $liked = false;
+        }
+
+        $test = Dislike::where([
+            ['comments_id', '=', $this->id],
+            ['users_id', '=', Auth::user()->id]
+        ])->get();
+
+
+        if(isset($test[0])){
+            $disliked = true;
+        }else{
+            $disliked = false;
         }
         
         // return parent::toArray($request);
@@ -36,7 +51,8 @@ class commentResource extends JsonResource
             'user_surname' => User::find($this->users_id)->surname,
             'user_pfp' => User::find($this->users_id)->pfp,
             'user_id' => $this->users_id,
-            'liked' => $liked
+            'liked' => $liked,
+            'disliked' => $disliked,
         ];
     }
 }

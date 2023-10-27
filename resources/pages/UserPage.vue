@@ -1,4 +1,24 @@
 <template>
+   
+        <div class="form_to_add" v-if="form_is_on">
+            <div>
+                <div class="inside">
+                    <textarea  name="text"  id="text" v-model="form_text" cols="30" rows="10"></textarea>
+                    <strong>{{ errors.text }}</strong>
+                    <div>
+                        <select @change="onChangeLang" name="" id="">
+                            <option>Выберите язык</option>
+                            <option :value="user.lang_s">{{ user.lang_s }}</option>
+                            <option :value="user.lang_t">{{ user.lang_t }}</option>
+                        </select>
+                        <strong>{{ errors.lang }}</strong>
+                        <button  @click="create_post">Создать пост</button>
+                    </div>
+                </div>
+                <img @click="close_form" src="/storage/imgs/close_btn.png" alt="">
+            </div>
+        </div>
+    
     <div class="container_user">
         <!-- <form action="" v-if="form_is_on">
             <select @change="onChangeLang" name="" id="" >
@@ -35,7 +55,9 @@
                 
             </div>
         </div> -->
+        
         <div class="user_info_container">
+            
             <div class="user_info">
                 <img :src="'/storage/profile_pics/' + user.pfp" alt="">
                 <div>
@@ -154,7 +176,64 @@
 .container_user{
     margin-top: 188px;
     font-family: "jejugothic";
+    z-index: 1;
 }
+.form_to_add{
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background-color: rgb(0, 0, 0, 0.2);
+            margin-left: -0px;
+            margin-top: -190px;
+            z-index: 100;
+        }
+        .form_to_add>div{
+            width: 1098px;
+            height: 604px;
+            box-sizing: border-box;
+            padding: 72px 73px;
+            background-color: #fff;
+            border-radius: 16px;
+            margin: auto;
+            margin-top: 200px;
+            position: relative;
+        }
+        .form_to_add>div>img{
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        .form_to_add>div textarea{
+            width: 954px;
+            height: 384px;
+            margin: 0;
+            margin-left: -15px;
+            margin-bottom: 31px;
+        }
+        .form_to_add .inside div{
+            display: flex;
+            justify-content: space-between;
+        }
+        .form_to_add>div select{
+            width: 518px;
+            height: 57px;
+            box-sizing: border-box;
+            font-size: 32px;
+            background-color: #fff;
+            margin-left: -15px;
+        }
+        .form_to_add>div button{
+            width: 345px;
+            height: 57px;
+            box-sizing: border-box;
+            font-size: 32px;
+            color: #0D890D;
+            background-color: #fff;
+            border: 2px solid black;
+            border-radius: 16px;
+            margin-right: -15px;
+        }
+
     .user_info_container{
         display: flex;
         justify-content: space-between;

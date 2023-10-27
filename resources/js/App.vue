@@ -1,15 +1,6 @@
 <template>
     <div class="container">
-        <div class="nav-bar nav-bar-logged" v-if="isLogged">
-            <a class="router logo" :href="$router.resolve({name: 'Dashboard'}).href"><img :src="'/storage/imgs/logo.png'" alt=""><span><span class="green_txt">Inter</span>Pals</span></a>
-            <div id="nav_right_logged">
-                <a class="lower" :href="$router.resolve({name: 'UserPage', params: { id: user_id }}).href"><img :src="'/storage/imgs/bell_icon.png'" alt=""></a>
-                <a :href="$router.resolve({name: 'UserPage', params: { id: user_id }}).href"><img :src="'/storage/imgs/people_icon.png'" alt=""></a>
-                <a :href="$router.resolve({name: 'Chat'}).href"><img :src="'/storage/imgs/speach_bubble_icon.png'" alt=""></a>
-                <a :href="$router.resolve({name: 'UserPage', params: { id: user_id }}).href"><img :src="'/storage/imgs/user_pfp.png'" alt=""></a>
-            </div>
-            <!-- <a href="#" @click="logout">logout</a> -->
-        </div>
+        <div v-if="isLogged"></div>
         <div class="nav-bar" v-else>
             <router-link class="router logo" to="/"><img :src="'/storage/imgs/logo.png'" alt=""><span><span class="green_txt">Inter</span>Pals</span></router-link>
             <div id="nav_right">
@@ -18,6 +9,17 @@
             </div>
         </div>
         <router-view></router-view>
+        <div class="nav-bar nav-bar-logged" v-if="isLogged">
+            <a class="router logo" :href="$router.resolve({name: 'Dashboard'}).href"><img :src="'/storage/imgs/logo.png'" alt=""><span><span class="green_txt">Inter</span>Pals</span></a>
+            <div id="nav_right_logged">
+                <a class="lower" :href="$router.resolve({name: 'UserPage', params: { id: user_id }}).href"><img :src="'/storage/imgs/bell_icon.png'" alt=""></a>
+                <a :href="$router.resolve({name: 'Possible_chats'}).href"><img :src="'/storage/imgs/people_icon.png'" alt=""></a>
+                <a :href="$router.resolve({name: 'Chat'}).href"><img :src="'/storage/imgs/speach_bubble_icon.png'" alt=""></a>
+                <a :href="$router.resolve({name: 'UserPage', params: { id: user_id }}).href"><img :src="'/storage/imgs/user_pfp.png'" alt=""></a>
+            </div>
+            <!-- <a href="#" @click="logout">logout</a> -->
+        </div>
+        
         <div class="footer">
             <div class="fooer_container">
                 <div>
@@ -49,10 +51,15 @@
         padding: 0px;
         margin: 0px;
     }
+    .container{
+        z-index: -2;
+    }
+    
         .nav-bar{
             display: flex;
             justify-content: space-between;
             padding: 48px 110px;
+            font-family: "jejugothic";
         }
         .nav-bar-logged{
             box-shadow: -8px 0px 12px 1px rgba(11, 14, 11, 0.41);
@@ -64,6 +71,7 @@
             left: 0;
             background-color: #fff;
         }
+        
             .router:visited, .router{
                 color: black;
                 text-decoration: none;
@@ -110,6 +118,7 @@
         background-color: black;
         color: white;
         font-family: "jejugothic";
+        margin-bottom: -10px;
     }
         .fooer_container{
             display: flex;

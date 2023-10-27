@@ -193,7 +193,7 @@
             font-family: 'jejugothic';
             font-size: 44px;
             left: 626px;
-            bottom: 340px;
+            bottom: 310px;
         } 
             .banner a:hover{
                 border: 0px solid black;
