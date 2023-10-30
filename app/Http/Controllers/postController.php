@@ -47,26 +47,27 @@ class postController extends Controller
     }
 
 
-    public function resourcetest(){
-
-        // $posts = posts::first();
-        $posts = posts::join('users', 'users.id', '=', 'posts.users_id')
-        ->select('posts.id as id', 'posts.lang as lang', 'posts.text as text', 'posts.created_at as created_at',
-            'users.id as user_id', 'users.name as name', 'users.surname as surname', 'users.pfp as pfp')
-        ->orderBy('posts.id', 'desc')->get();
-
-        // return new postResourceCollection($posts);
-        return postResource::collection($posts);
-
-    }
-
 
 
     public function getPosts_by_user($id){
 
         $posts = posts::join('users', 'users.id', '=', 'posts.users_id')->where('users_id', '=', $id)->orderBy('posts.id', 'desc')->get();
 
-        return $posts;
+        $posts = posts::join('users', 'users.id', '=', 'posts.users_id')
+        ->select(
+            'posts.id as id',
+            'posts.lang as lang',
+            'posts.text as text',
+            'posts.created_at as created_at',
+            'users.id as user_id',
+            'users.name as name',
+            'users.surname as surname',
+            'users.pfp as pfp'
+        )
+        ->where('posts.users_id', '=', $id)->orderBy('posts.id', 'desc')->get();
+
+        return postResource::collection($posts);
+
 
     }
 

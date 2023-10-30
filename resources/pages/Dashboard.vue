@@ -32,22 +32,22 @@
             </button>
         </div>
         <div class="posts">
-            <div v-for="post in posts" :key="post">
-            <div class="post" v-if="!filter_is_on || filter_lang == post.lang">
+            <div v-for="index in posts.length" :key="post">
+            <div class="post" v-if="!filter_is_on || filter_lang == posts[index-1].lang">
                 <div class="post_body">
-                    <a :href="$router.resolve({name: 'UserPage', params: { id: post.user_id }}).href"><img :src="'/storage/profile_pics/' + post.pfp" alt=""></a>
+                    <a :href="$router.resolve({name: 'UserPage', params: { id: posts[index-1].user_id }}).href"><img :src="'/storage/profile_pics/' + posts[index-1].pfp" alt=""></a>
                     <div>
-                        <p class="upper_line"><a :href="$router.resolve({name: 'UserPage', params: { id: post.user_id }}).href">{{ user.name }} {{ user.surname }}</a><span>20.01.2023</span></p>
-                        <p class="lower_line">{{ post.text }}</p>
+                        <p class="upper_line"><a :href="$router.resolve({name: 'UserPage', params: { id: posts[index-1].user_id }}).href">{{ posts[index-1].name }} {{ posts[index-1].surname }}</a><span>20.01.2023</span></p>
+                        <p class="lower_line">{{ posts[index-1].text }}</p>
                     </div>
                 </div>
                 <div class="leave_comment">
-                    <textarea v-if="write_comment"  ref="comment_text" name="" id="" cols="30" rows="10"></textarea>
-                    <button v-if="write_comment" @click="create_comment(post.id)">Прокомметировать</button>
-                    <button v-if="!write_comment" @click="write_comment_f()">Прокомметировать</button>
+                    <textarea ref="comment_text" name="" id="" cols="30" rows="10"></textarea>
+                    <strong>{{ errors.comment_txt[index-1] }}</strong>
+                    <button @click="create_comment(posts[index-1].id, index)">Прокомметировать</button>
                 </div>
                 <div class="comments">
-                    <div class="comment" v-for="commnet in post.comments" :key="commnet">
+                    <div class="comment" v-for="commnet in posts[index-1].comments" :key="commnet">
                         <div class="comment_text">
                             <img class="comment_user_pfp" src="/storage/imgs/user_pfp_comment.png" alt="">
                             <div>
@@ -63,7 +63,7 @@
                     
                 </div>
             </div>
-        </div>
+            </div>
         </div>
     </div>
 </template>
@@ -274,13 +274,17 @@
                 form_lang: '',
                 errors: {
                     text: null,
-                    lang: null
+                    lang: null,
+                    comment_txt: null
                 },
             }
         }, created(){
             this.$axios.get('http://127.0.0.1:8000/api/posts').then(response => {
                 this.posts = response.data.data;
                 console.log(response.data.data)
+                for(let i = 0; i < this.posts.length; i++){
+                    this.errors.comment_txt[i] = '';
+                }
             })
     }, methods: {
             open_form(){
@@ -331,19 +335,23 @@
                     }
                 })
             },
-            create_comment(post_id) {
+            create_comment(post_id, index) {
+                this.errors.comment_txt = [];
                 this.$axios.post('http://127.0.0.1:8000/api/makecomment',
                     {
                         post_id: post_id,
-                        text: this.comment_text,
+                        text: this.$refs['comment_text'][index-1].value,
                     }
                 ).then(response => {
                 this.$axios.get('http://127.0.0.1:8000/api/posts').then(response => {
                     this.posts = response.data.data;
-                    this.write_comment = false;
-
+                    this.$refs['comment_text'][index -1].value = '';
                 })
-            })
+            }).catch((err) => {
+                if (err.response.data.errors.text) {
+                    this.errors.comment_txt[index-1] = err.response.data.errors.text[0];
+                }
+                });
             }
         }
     }
