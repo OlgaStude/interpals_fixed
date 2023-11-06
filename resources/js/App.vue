@@ -12,12 +12,11 @@
         <div class="nav-bar nav-bar-logged" v-if="isLogged">
             <a class="router logo" :href="$router.resolve({name: 'Dashboard'}).href"><img :src="'/storage/imgs/logo.png'" alt=""><span><span class="green_txt">Inter</span>Pals</span></a>
             <div id="nav_right_logged">
-                <a class="lower" :href="$router.resolve({name: 'UserPage', params: { id: user_id }}).href"><img :src="'/storage/imgs/bell_icon.png'" alt=""></a>
+                <a class="lower" @click="logout"><img :src="'/storage/imgs/bell_icon.png'" alt=""></a>
                 <a :href="$router.resolve({name: 'Possible_chats'}).href"><img :src="'/storage/imgs/people_icon.png'" alt=""></a>
-                <a :href="$router.resolve({name: 'Chat'}).href"><img :src="'/storage/imgs/speach_bubble_icon.png'" alt=""></a>
+                <a :href="$router.resolve({name: 'Users_chats'}).href"><img :src="'/storage/imgs/speach_bubble_icon.png'" alt=""></a>
                 <a :href="$router.resolve({name: 'UserPage', params: { id: user_id }}).href"><img :src="'/storage/imgs/user_pfp.png'" alt=""></a>
             </div>
-            <!-- <a href="#" @click="logout">logout</a> -->
         </div>
         
         <div class="footer">

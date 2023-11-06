@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\loginRequest;
 use App\Http\Requests\registrationRequest;
+use App\Http\Resources\userResource;
 use App\Models\Language;
 use App\Models\Language_s;
 use App\Models\User;
@@ -19,7 +20,7 @@ class userController extends Controller
     
     public function register(registrationRequest $req){
         
-        $req->file('pfp')->store('/profile_pics');
+        $req->file('pfp')->store('public/profile_pics');
         $pfp_name = $req->file('pfp')->hashName();
         $user = User::create(array_merge($req->validated(), ['password' => Hash::make($req->password), 'pfp' => $pfp_name, 'lang_s' => $req->lang_s, 'lang_t' => $req->lang_t]));
 
@@ -70,8 +71,29 @@ class userController extends Controller
 
     public function get_user($id)
     {
+        $exists = User::where('id', '=', $id)->exists();
 
-        return User::findOrFail($id);
+        if($exists){
+            return User::find($id);
+        }
+        return 'no_user_found';
+
+    }
+
+    public function get_users()
+    {
+        
+        return User::where('id', '<>', Auth::user()->id)->get();
+
+    }
+
+    public function get_existant_chats()
+    {
+        
+        $users = User::where('id', '<>', Auth::user()->id)->get();
+
+        return userResource::collection($users);
+
     }
 
 

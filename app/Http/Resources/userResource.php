@@ -2,7 +2,9 @@
 
 namespace App\Http\Resources;
 
+use App\Models\ChatMessage;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Auth;
 
 class userResource extends JsonResource
 {
@@ -14,6 +16,19 @@ class userResource extends JsonResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+
+        $exists = ChatMessage::where([
+            ['sender_id', '=', Auth::user()->id],
+            ['reciewer_id', '=', $this->id],
+        ])->orWhere([
+            ['reciewer_id', '=', Auth::user()->id],
+            ['sender_id', '=', $this->id],
+        ])->orderBy('id', 'asc')->exists();
+
+        if($exists){
+            return parent::toArray($request);
+
+        }
+
     }
 }

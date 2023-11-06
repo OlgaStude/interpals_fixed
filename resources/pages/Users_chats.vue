@@ -1,8 +1,8 @@
 <template>
     <div class="PP_container">
-        <h1>Вы можете начать диалог:</h1>
+        <h1>Ваши диалоги:</h1>
         <div class="possible_people" v-for="user in users">
-            <div class="person">
+            <div v-if="user != null" class="person">
                 <div>
                     <img :src="'/storage/profile_pics/'+user.pfp" alt="">
                     <p><a :href="$router.resolve({name: 'UserPage', params: { id: user.id }}).href">{{ user.name }} {{ user.surname }}</a></p>
@@ -18,16 +18,16 @@
 
   <script>
   export default {
-    name: "P_chats",
+    name: "E_chats",
     data() {
       return {
         users: null
       }
     },
     created() {
-        this.$axios.get('http://127.0.0.1:8000/api/getusers').then(response => {
-                this.users = response.data;
-            })
+        this.$axios.get('http://127.0.0.1:8000/api/getexistantchats').then(response => {
+            this.users = response.data.data;
+        })
     },
     methods: {
     },beforeRouteEnter(to, from, next) {

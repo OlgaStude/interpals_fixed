@@ -32,12 +32,12 @@
             </button>
         </div>
         <div class="posts">
-            <div v-for="index in posts.length" :key="post">
-            <div class="post" v-if="!filter_is_on || filter_lang == posts[index-1].lang">
+            <div v-for="index in posts.length" :key="index">
+                <div class="post">
                 <div class="post_body">
                     <a :href="$router.resolve({name: 'UserPage', params: { id: posts[index-1].user_id }}).href"><img :src="'/storage/profile_pics/' + posts[index-1].pfp" alt=""></a>
                     <div>
-                        <p class="upper_line"><a :href="$router.resolve({name: 'UserPage', params: { id: posts[index-1].user_id }}).href">{{ posts[index-1].name }} {{ posts[index-1].surname }}</a><span>20.01.2023</span></p>
+                        <p class="upper_line"><a :href="$router.resolve({name: 'UserPage', params: { id: posts[index-1].user_id }}).href">{{ posts[index-1].name }} {{ posts[index-1].surname }}</a><span>{{posts[index-1].created_at}}</span></p>
                         <p class="lower_line">{{ posts[index-1].text }}</p>
                     </div>
                 </div>
@@ -45,19 +45,29 @@
                     <textarea ref="comment_text" name="" id="" cols="30" rows="10"></textarea>
                     <strong>{{ errors.comment_txt[index-1] }}</strong>
                     <button @click="create_comment(posts[index-1].id, index)">Прокомметировать</button>
-                </div>
+            </div>
                 <div class="comments">
+                    <div class="filter">
+                        <select @change="filterComments(index, posts[index-1].id)" name="" ref="comment_filter" id="">
+                            <option value="usefullness">Сначала популярные</option>
+                            <option value="time">Сначала свежие</option>
+                        </select>
+                    </div>
                     <div class="comment" v-for="commnet in posts[index-1].comments" :key="commnet">
                         <div class="comment_text">
-                            <img class="comment_user_pfp" src="/storage/imgs/user_pfp_comment.png" alt="">
+                            <img class="comment_user_pfp" :src="'/storage/profile_pics/'+ commnet.user_pfp" alt="">
                             <div>
                                 <p class="upper_line"><a :href="$router.resolve({name: 'UserPage', params: { id: commnet.user_id }}).href">{{ commnet.user_name }} {{ commnet.user_surname }}</a></p>
                                 <p class="lower_line">{{ commnet.text }}</p>
                             </div>
                         </div>
                         <div class="rate">
-                            <img src="/storage/imgs/Like.png" alt="">
-                            <img class="dislike" src="/storage/imgs/Disike.png" alt="">
+                            <span class="counter">{{ commnet.likes }}</span>
+                            <img @click="like_comment(commnet.id, $event)" v-if="commnet.liked" class="liked" src="/storage/imgs/Like_red.png" alt="">
+                            <img @click="like_comment(commnet.id, $event)" v-else class="not_liked" src="/storage/imgs/Like.png" alt="">
+                            <span class="counter">{{ commnet.dislikes }}</span>
+                            <img @click="dislike_comment(commnet.id, $event)" v-if="commnet.disliked" class="disliked dislike" src="/storage/imgs/Dislike_red.png" alt="">
+                            <img @click="dislike_comment(commnet.id, $event)" v-else class="not_disliked dislike" src="/storage/imgs/Disike.png" alt="">
                         </div>
                     </div>
                     
@@ -74,9 +84,14 @@
 .make_green{
     background-color: greenyellow;
 }
+
 @font-face {
     font-family: "jejugothic";
     src: url('storage/fonts/JejuGothic-Regular.ttf');
+}
+.inside button:hover{
+    border: 6px solid black;
+    text-decoration: underline;
 }
 .dashboard_content{
     margin-top: 188px;
@@ -253,6 +268,12 @@
                             .dislike{
                                 margin-top: 15px;
                             }
+                        .counter{
+                            font-size: 32px;
+                            margin-top: 20px;
+                            margin-left: 20px;
+                        }
+
 
 </style>
 
@@ -275,7 +296,7 @@
                 errors: {
                     text: null,
                     lang: null,
-                    comment_txt: null
+                    comment_txt: []
                 },
             }
         }, created(){
@@ -297,23 +318,42 @@
                 this.write_comment = true;
             },
             onChangeLang(e) {
+                this.errors.comment_txt = [];
                 if (e.target.value == 'no_filter') {
                     this.filter_lang = null;
                     this.filter_is_on = false;
+                    this.posts = '';
+                    this.$axios.get('http://127.0.0.1:8000/api/posts/').then(response => {
+                        this.posts = response.data.data;
+                    })
                 } else {
                     this.filter_lang = e.target.value;
                     this.filter_is_on = true;
-                    
+                    this.posts = [];
+                    this.$axios.get('http://127.0.0.1:8000/api/posts/').then(response => {
+                        for(let i = 0; i<response.data.data.length; i++){
+                            if(response.data.data[i].lang == this.filter_lang){
+                                this.posts.push(response.data.data[i]);
+                            }
+                        }
+                    })
                 }
             },
-            onChangeLanginform(e){
-                this.form_lang = e.target.value;
+            onChangeLanginform(e) {
+
+                console.log(e.target.value)
+                if (e.target.value != 'Выберите язык') {
+                    this.form_lang = e.target.value;
+                } else {
+                    this.form_lang = null
+                }
             },
             create_post(e){
                 e.preventDefault();
                 this.errors = {
                     text: null,
-                    lang: null
+                    lang: null,
+                    comment_txt: []
                 }
                 this.$axios.post('http://127.0.0.1:8000/api/makepost', {
                     lang: this.form_lang,
@@ -326,7 +366,7 @@
                         this.posts = response.data.data;
                     })
                 }).catch(err => {
-                        console.log(err.response.data)
+                        console.log(err.response.data.errors)
                     if (err.response.data.errors.text) {
                         this.errors.text = err.response.data.errors.text[0];
                     }
@@ -337,6 +377,7 @@
             },
             create_comment(post_id, index) {
                 this.errors.comment_txt = [];
+                console.log(this.$refs['comment_text']);
                 this.$axios.post('http://127.0.0.1:8000/api/makecomment',
                     {
                         post_id: post_id,
@@ -352,8 +393,69 @@
                     this.errors.comment_txt[index-1] = err.response.data.errors.text[0];
                 }
                 });
+            },
+            like_comment(id, e){
+                this.$axios.post('http://127.0.0.1:8000/api/likecomment',
+                    {
+                        id: id
+                    }
+                ).then(response => {
+                    console.log(this.filter_is_on)
+                    this.$axios.get('http://127.0.0.1:8000/api/posts/').then(response => {
+                        if(this.filter_is_on == false){
+                            this.posts = response.data.data;
+                        } else {
+                            if(this.filter_is_on == false){
+                                this.posts = response.data.data;
+                            } else {
+                                if(e.target.getAttribute('src') == '/storage/imgs/Like.png'){
+                                    e.target.setAttribute('src', '/storage/imgs/Like_red.png')
+                                    e.target.nextElementSibling.nextElementSibling.setAttribute("src", '/storage/imgs/Disike.png'); 
+                                } else {
+                                    e.target.setAttribute('src', '/storage/imgs/Like.png')
+                                }
+                                
+                            }
+                        }
+                    })
+                })
+            },
+            dislike_comment(id, e){
+                this.$axios.post('http://127.0.0.1:8000/api/dislikecomment',
+                    {
+                        id: id
+                    }
+                ).then(response => {
+                    this.$axios.get('http://127.0.0.1:8000/api/posts/').then(response => {
+                        if(this.filter_is_on == false){
+                            this.posts = response.data.data;
+                        } else {
+                            if(e.target.getAttribute('src') == '/storage/imgs/Disike.png'){
+                                e.target.setAttribute('src', '/storage/imgs/Dislike_red.png')
+                                e.target.previousElementSibling.previousElementSibling.setAttribute("src", '/storage/imgs/Like.png'); 
+                            } else {
+                                e.target.setAttribute('src', '/storage/imgs/Disike.png')
+                            }
+                            
+                        }
+                    })
+                })
+            },
+            filterComments(index, id){
+                this.$axios.post('http://127.0.0.1:8000/api/filtercomments',
+                    {
+                        post_id: id,
+                        filter: this.$refs['comment_filter'][index -1].value
+                    }).then(response => {
+                        this.posts[index-1].comments = response.data.data
+                })
             }
+        },beforeRouteEnter(to, from, next) {
+        if(!window.Laravel.user){
+            return next("/");
         }
+        next();
+    }
     }
 
 </script>

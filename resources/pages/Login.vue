@@ -134,7 +134,7 @@ form strong{
     },
     beforeRouteEnter(to, from, next) {
     if (window.Laravel.isLogged) {
-      return next("user/" + window.Laravel.user.id);
+      return next("/dashboard");
     }
     next();
   },

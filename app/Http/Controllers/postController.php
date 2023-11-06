@@ -51,7 +51,7 @@ class postController extends Controller
 
     public function getPosts_by_user($id){
 
-        $posts = posts::join('users', 'users.id', '=', 'posts.users_id')->where('users_id', '=', $id)->orderBy('posts.id', 'desc')->get();
+        // $posts = posts::join('users', 'users.id', '=', 'posts.users_id')->where('users_id', '=', $id)->orderBy('posts.id', 'desc')->get();
 
         $posts = posts::join('users', 'users.id', '=', 'posts.users_id')
         ->select(

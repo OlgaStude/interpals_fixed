@@ -5,12 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Dislike extends Model
+class ChatMessage extends Model
 {
     use HasFactory;
 
+
     protected $fillable = [
-        'users_id',
-        'comments_id'
+        'sender_id',
+        'reciewer_id',
+        'message'
     ];
 }

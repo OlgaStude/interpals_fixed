@@ -46,13 +46,17 @@ class commentResource extends JsonResource
         
         // return parent::toArray($request);
         return [
+            'id' => $this->id,
             'text' => $this->text,
             'user_name' => User::find($this->users_id)->name,
             'user_surname' => User::find($this->users_id)->surname,
             'user_pfp' => User::find($this->users_id)->pfp,
             'user_id' => $this->users_id,
             'liked' => $liked,
+            'likes' => $this->likes,
             'disliked' => $disliked,
+            'dislikes' => $this->dislikes,
+
         ];
     }
 }

@@ -3,7 +3,7 @@
         <section class="banner">
             <h1><span class="green_txt">Inter</span>Pals</h1>
             <p>Онлайн сервис языкового обмена</p>
-            <a href="">Начни уже сейчас!</a>
+            <a :href="$router.resolve({name: 'Registration'}).href">Начни уже сейчас!</a>
             <img class="banner_bg_img" src="storage/imgs/main_map.png" alt="">
         </section>
         <section class="explanation">
@@ -194,11 +194,11 @@
             font-size: 44px;
             left: 626px;
             bottom: 310px;
+            z-index: 1;
         } 
             .banner a:hover{
-                border: 0px solid black;
-                color: white;
-                background-color: #0D890D;
+                border: 6px solid black;
+                text-decoration: underline;
             }
 
 

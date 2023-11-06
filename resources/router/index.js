@@ -7,6 +7,7 @@ import UserPage from '../pages/UserPage.vue'
 import Dashboard from '../pages/Dashboard.vue'
 import Chat from '../pages/Chat.vue'
 import Possible_chats from '../pages/Possible_chats.vue'
+import Users_chats from '../pages/Users_chats.vue'
 
 export const routes = [
     {
@@ -36,13 +37,18 @@ export const routes = [
     },
     {
         name: 'Chat',
-        path: '/chat',
+        path: '/chat/:id',
         component: Chat
     },
     {
         name: 'Possible_chats',
         path: '/youmaytalkto',
         component: Possible_chats
+    },
+    {
+        name: 'Users_chats',
+        path: '/userschats',
+        component: Users_chats
     },
 ];
 
