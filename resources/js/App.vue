@@ -12,10 +12,10 @@
         <div class="nav-bar nav-bar-logged" v-if="isLogged">
             <a class="router logo" :href="$router.resolve({name: 'Dashboard'}).href"><img :src="'/storage/imgs/logo.png'" alt=""><span><span class="green_txt">Inter</span>Pals</span></a>
             <div id="nav_right_logged">
-                <a class="lower" @click="logout"><img :src="'/storage/imgs/bell_icon.png'" alt=""></a>
                 <a :href="$router.resolve({name: 'Possible_chats'}).href"><img :src="'/storage/imgs/people_icon.png'" alt=""></a>
                 <a :href="$router.resolve({name: 'Users_chats'}).href"><img :src="'/storage/imgs/speach_bubble_icon.png'" alt=""></a>
-                <a :href="$router.resolve({name: 'UserPage', params: { id: user_id }}).href"><img :src="'/storage/imgs/user_pfp.png'" alt=""></a>
+                <a class="lower" @click="logout"><img :src="'/storage/imgs/logout_icon.png'" alt=""></a>
+                <a :href="$router.resolve({name: 'UserPage', params: { id: user_id }}).href"><img class="pfp_nav" :src="'/storage/profile_pics/' + user_pfp" alt=""></a>
             </div>
         </div>
         
@@ -53,7 +53,11 @@
     .container{
         z-index: -2;
     }
-    
+    .pfp_nav{
+        width: 100px;
+        height: 100px;
+        border-radius: 50px;
+    }
         .nav-bar{
             display: flex;
             justify-content: space-between;
@@ -100,7 +104,7 @@
                 display: block;
             }
             .lower{
-                margin-top: 5px;
+                cursor: pointer;
             }
             #nav_right .router:hover{
                 text-decoration: underline;
@@ -156,13 +160,15 @@
         data(){
             return{
                 isLogged: false,
-                user_id: null
+                user_id: null,
+                user_pfp: null
             }
         },
         created(){
             if(window.Laravel.isLogged){
                 this.isLogged = true,
-                this.user_id = window.Laravel.user.id
+                this.user_id = window.Laravel.user.id,
+                this.user_pfp = window.Laravel.user.pfp
             }
         }, methods: {
             logout (e) {
