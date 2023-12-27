@@ -1,196 +1,176 @@
 <template>
-    <div class="container">
-        <div v-if="isLogged"></div>
-        <div class="nav-bar" v-else>
-            <router-link class="router logo" to="/"><img :src="'/storage/imgs/logo.png'" alt=""><span><span class="green_txt">Inter</span>Pals</span></router-link>
-            <div id="nav_right">
-                <router-link class="router" to="/login">Войти</router-link>
-                <router-link class="router" to="/registration"><span class="green_txt">Присоедениться</span></router-link>
-            </div>
-        </div>
-        <router-view></router-view>
-        <div class="nav-bar nav-bar-logged" v-if="isLogged">
-            <a class="router logo" :href="$router.resolve({name: 'Dashboard'}).href"><img :src="'/storage/imgs/logo.png'" alt=""><span><span class="green_txt">Inter</span>Pals</span></a>
-            <div id="nav_right_logged">
-                <a :href="$router.resolve({name: 'Possible_chats'}).href"><img :src="'/storage/imgs/people_icon.png'" alt=""></a>
-                <a :href="$router.resolve({name: 'Users_chats'}).href"><img :src="'/storage/imgs/speach_bubble_icon.png'" alt=""></a>
-                <a class="lower" @click="logout"><img :src="'/storage/imgs/logout_icon.png'" alt=""></a>
-                <a :href="$router.resolve({name: 'UserPage', params: { id: user_id }}).href"><img class="pfp_nav" :src="'/storage/profile_pics/' + user_pfp" alt=""></a>
-            </div>
-        </div>
-        
-        <div class="footer">
-            <div class="fooer_container">
-                <div>
-                    <p>О нас</p>
-                    <p>Часто задаваемые вопросы</p>
-                    <p>Обратная связь</p>
-                </div>
-                <div>
-                    <img class="footer_img_1" src="/storage/imgs/youtube_icon.png" alt="">
-                    <img class="footer_img_2" src="/storage/imgs/telegram_icon.png" alt="">
-                </div>
-            </div>
-            <p>© 2023 InterPals - <span class="diff_font">Онлайн сервис языкового обмена</span></p>
-        </div>
+  <div class="container">
+    <div class="navbar">
+    <div class="navbar-bav" v-if="isLogged">
+      <div class="logo_div">
+      <a href="/"><img src="/storage/img/logo.png"></a>
+      <p>Vobla</p>
+      </div>
+      <div class="user_nav_div">
+      <a href="/chats">Диалоги</a>
+      <a href="/friends">Друзья</a>
+      <a href="/admin" v-if="is_admin == 1">Админ</a>
+      <a href="#" @click="logout">Выйти</a>
+      <a :href="$router.resolve({ name: 'userPage', params: { id: user.id } }).href"><img :src="'/storage/profile_pics/' + user.avatar" class="user_avatar"></a>
+      </div>
+      </div>
+    <div class="" v-else>
+      <div class="logo_div">
+      <a href="/"><img class="logo" src="/storage/img/logo.png"></a>
+      <p>Vobla</p>
+      </div>
+      <div class="login_register_div">
+      <a href="/login" class="login_nav">Авторизация</a>
+      <a href="/registration">Регистрация</a>
+      </div>
+
     </div>
+    </div>
+    <router-view></router-view>
+  </div>
 </template>
 
 <style>
+body {
+  background: url(/storage/img/background.png);
+  background-size: 100%;
+  background-position-x: center;
+}
 
-    @font-face {
-        font-family: "jejugothic";
-        src: url('storage/fonts/JejuGothic-Regular.ttf');
-    }
-    @font-face {
-        font-family: "jejuM";
-        src: url('storage/fonts/JejuMyeongjo-Regular.ttf');
-    }
-    body{
-        padding: 0px;
-        margin: 0px;
-    }
-    .container{
-        z-index: -2;
-    }
-    .pfp_nav{
-        width: 100px;
-        height: 100px;
-        border-radius: 50px;
-    }
-        .nav-bar{
-            display: flex;
-            justify-content: space-between;
-            padding: 48px 110px;
-            font-family: "jejugothic";
-        }
-        .nav-bar-logged{
-            box-shadow: -8px 0px 12px 1px rgba(11, 14, 11, 0.41);
-            box-sizing: border-box;
-            height: 188px;
-            width: 100%;
-            position: fixed;
-            top: 0;
-            left: 0;
-            background-color: #fff;
-        }
-        
-            .router:visited, .router{
-                color: black;
-                text-decoration: none;
-                font-size: 30px;
-            }
-                .green_txt{
-                    color: #0D890D;
-                }
-                
-                .logo{
-                    display: flex;
-                    align-items: center;
-                    font-family: 'jejugothic';
-                }
-                    .logo>span{
-                        padding-top: 10px;
-                    }
-            #nav_right .router{
-                margin-left: 54px;
-            }
-            #nav_right_logged{
-                display: flex;
-                align-items: center;
-            }
-            #nav_right_logged a{
-                margin-left: 54px;
-                display: block;
-            }
-            .lower{
-                cursor: pointer;
-            }
-            #nav_right .router:hover{
-                text-decoration: underline;
-                text-underline-offset: 5px;
-            }
-            #nav_right .green_txt:hover{
-                color: #0D890D;
-                text-decoration: underline;
-            }
+a {
+  text-decoration: none;
+}
 
-    .footer{
-        width: 100%;
-        height: 325px;
-        background-color: black;
-        color: white;
-        font-family: "jejugothic";
-        margin-bottom: -10px;
-    }
-        .fooer_container{
-            display: flex;
-            justify-content: space-between;
-            padding: 67px 120px;
-            font-size: 30px;
-        }
-        .fooer_container div{
-            display: flex;
-            column-gap: 81px;
-        }
-            .footer_img_1{
-                width: 77px;
-                height: 77px;
-            }
-            .footer_img_2{
-                width: 67px;
-                height: 67px;
-                margin-top: 5px;
-            }
-        .footer>p{
-            font-size: 24px;
-            margin-left: 120px;
-            margin-bottom: 51px;
-        }
-        .diff_font{
-            font-family: 'jejuM';
-        }
+.navbar {
+  background-color: #EBB3C0;
+  height: 165px;
+}
+
+.login_register_div {
+  text-align: end;
+  position: relative;
+  bottom: 5vh;
+}
+
+.login_register_div a {
+  margin-right: 3%;
+  font-size: 32px;
+  color: black;
+}
+
+.logo_div {
+  font-size: 32px;
+  position: relative;
+  margin-left: 2%;
+  top: 2vh;
+}
+
+.user_avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 100%;
+  position: relative;
+  top: 2vh;
+}
+
+.user_nav_div {
+  text-align: end;
+  position: relative;
+  bottom: 6vh;
+}
+
+.user_nav_div a {
+  margin-right: 6%;
+  font-size: 32px;
+  color: black;
+  position: relative;
+  bottom: 3vh;
+}
+
+@media (max-width: 320px) {
+
+body {
+  background: url(/storage/img/background_mb.png);
+  background-size: 100%;
+  background-position-x: center;
+}
+
+.navbar {
+  height: 69px;
+}
+
+.logo_div img {
+  width: 25px;
+  height: 25px;
+}
+
+.logo_div p {
+  font-size: 12px;
+  position: relative;
+  bottom: 1vh;
+}
+
+.login_register_div {
+  bottom: 6vh;
+
+}
+
+.login_register_div a {
+  font-size: 10px;
+}
+
+.user_nav_div a {
+  font-size: 10px;
+  bottom: 4vh;
+}
+
+.user_avatar {
+  width: 30px;
+  height: 30px;
+}
+
+}
 
 </style>
 
 <script>
+export default {
+  name: "App",
+  data() {
+    return {
+      isLogged: false,
+      user: [],
+      is_admin: false
+    };
+  },
+  created() {
+    if (IsLogged) {
+      this.isLogged = true;
+      this.is_admin = window.Laravel.user.is_admin
+      this.$axios
+        .get("http://127.0.0.1:8000/api/userinfo")
+        .then((response) => {
+          this.user = response.data;
+          console.log(this.user)
 
-    export default{
-        name: 'App',
-        data(){
-            return{
-                isLogged: false,
-                user_id: null,
-                user_pfp: null
-            }
-        },
-        created(){
-            if(window.Laravel.isLogged){
-                this.isLogged = true,
-                this.user_id = window.Laravel.user.id,
-                this.user_pfp = window.Laravel.user.pfp
-            }
-        }, methods: {
-            logout (e) {
-              e.preventDefault();
-              this.$axios.get('/sanctum/csrf-cookie').then(response => {
-                this.$axios.post('http://127.0.0.1:8000/api/logout').then(response => {
-                    if(response.data.status == 200){
-                        window.location.href = '/';
-                    } else {
-                        console.log(response)
-                    }
-                }).catch(error => {
-                    console.error(error)
-                })
-              });  
-            },
-            changeUserid() {
-                
-            }
-
-        },
+        });
     }
+  },
+  methods: {
+    logout(e) {
+      e.preventDefault();
+      this.$axios.get("/sanctum/csrf-cookie").then((response) => {
+        this.$axios
+          .post("/api/logout")
+          .then((response) => {
+              window.location.href = "/";
 
+          })
+          .catch(function (error) {
+            console.error(error);
+          });
+      });
+    },
+  },
+};
 </script>
-
