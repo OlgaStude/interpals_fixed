@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class postRequest extends FormRequest
+class categoryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,16 +24,15 @@ class postRequest extends FormRequest
     public function rules()
     {
         return [
-            'body' => 'required',
-            'categories' => 'required',
+            'name' => 'required|regex:/^[a-zA-Zа-яА-Я0-9 ]+$/u',
         ];
     }
 
     public function messages()
     {
         return [
-            'body.required' => 'Введите текст поста',
-            'categories.required' => 'Выберите категорию'
+            'name.required' => 'Введите какое-нибудь значение',
+            'name.regex' => 'Можно вводить только буквы и цифры',
         ];
     }
 }

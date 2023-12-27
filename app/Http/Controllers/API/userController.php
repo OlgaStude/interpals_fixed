@@ -3,98 +3,139 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\loginRequest;
+use App\Http\Requests\loginReques;
+use App\Http\Requests\passwordRequest;
+use App\Http\Requests\registerRequest;
 use App\Http\Requests\registrationRequest;
-use App\Http\Resources\userResource;
-use App\Models\Language;
-use App\Models\Language_s;
+use App\Http\Requests\updateRequest;
+use App\Models\Categories;
+use App\Models\Chat_messages;
+use App\Models\Friends;
+use App\Models\friendsRequest;
+use App\Models\Post;
+use App\Models\post_category;
 use App\Models\User;
-use Illuminate\Contracts\Session\Session;
+use App\Models\userInfo;
+use App\Models\UsersCategories;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
 
-class userController extends Controller
+class UserController extends Controller
 {
-    
-    public function register(registrationRequest $req){
-        
-        $req->file('pfp')->store('public/profile_pics');
-        $pfp_name = $req->file('pfp')->hashName();
-        $user = User::create(array_merge($req->validated(), ['password' => Hash::make($req->password), 'pfp' => $pfp_name, 'lang_s' => $req->lang_s, 'lang_t' => $req->lang_t]));
 
-        if($user){
-           
+    public function register(registerRequest $req)
+    {
+        if($req->hasFile('avatar')){
+            $req->file('avatar')->store('public/profile_pics');
+            $pfp_name = $req->file('avatar')->hashName();
+        }else{
+            $pfp_name = 'default_avatar.png';
+        }
+
+        $user = User::create(['password' => Hash::make($req->password), 'login' => $req->login, 'is_admin' => 0]);
+        if($req->categories != []){
+            
+            foreach($req->categories as $category){
+                $category_id = Categories::where('name', '=', $category)->get();
+                UsersCategories::create(['users_id' => $user->id, 'categories_id' => $category_id[0]->id, 'is_admin' => 0]);
+            }
+        }
+        userInfo::create(['users_id' => $user->id, 'name' => $req->name, 'avatar' => $pfp_name, 'email' => $req->email]);
+
+        if ($user) {
             Auth::login($user);
-            return response()->json(['status' => 200, 'message' => 'user is registreted!', 'user_id' => $user->id]);
+            $user_id = User::where("login", $user['login'])->get();
+            return response()->json(['status' => 200, 'message' => 'user is registreted!', 'user_id' => $user_id[0]->id]);
         }
 
         return response()->json(['status' => 422, 'message' => 'user is failed to be registreted!']);
-
     }
 
-    public function login(loginRequest $req)
+
+    public function login(loginReques $req)
     {
-        $formFields = $req->only(['email', 'password']);
-        
-        
-        if (Auth::attempt($formFields)) {
-            $user = User::where("email", $formFields['email'])->get();
-            return response()->json(['status' => 200, 'message' => 'user is logged in!', 'user_id' => $user[0]->id]);
+
+        $user = [
+            'login' => $req->login,
+            'password' => $req->password
+        ];
+
+        if (Auth::attempt($user)) {
+            $user_id = User::where("login", $user['login'])->get();
+            return response()->json(['status' => 200, 'message' => 'user logged in', 'user_id' => $user_id[0]->id]);
         }
-        return response()->json(['status' => 422, 'message' => 'Неверная почта или пароль']);
+
+        return response()->json(['status' => 400, 'message' => 'Неверный логин или пароль']);
     }
 
 
-    public function logout(){
-
-        try{
+     public function logout()
+    {
+        try {
             Auth::logout();
             return response()->json(['status' => 200, 'message' => 'user is logged out!']);
-            
-
-        } catch(QueryException $e){
+        } catch (QueryException $e) {
             return response()->json(['status' => 422, 'message' => $e]);
         }
-
-
     }
 
 
-    public function get_langs(){
+    public function updateuser(updateRequest $req){
 
-        return Language::all();
-
-
-    }
-
-    public function get_user($id)
-    {
-        $exists = User::where('id', '=', $id)->exists();
-
-        if($exists){
-            return User::find($id);
+        userInfo::where("id", Auth::user()->id)->update(["name" => $req->name]);
+        if($req->login != 'nonewlogin'){
+            User::where("id", Auth::user()->id)->update(["login" => $req->login]);
         }
-        return 'no_user_found';
+        if($req->hasFile('avatar')){
+            $req->file('avatar')->store('public/profile_pics');
+            $material_name = $req->file('avatar')->hashName();
+
+            $check = userInfo::where("id", '=', Auth::user()->id)->get();
+
+            if($check[0]->avatar != 'default_avatar.png'){
+                $avatar = userInfo::where("users_id", '=', Auth::user()->id)->get();
+                Storage::delete("public/profile_pics/".$avatar[0]->avatar);
+            }
+
+
+            userInfo::where("id", Auth::user()->id)->update(["avatar" => $material_name]);
+
+        }
+
 
     }
 
-    public function get_users()
-    {
-        
-        return User::where('id', '<>', Auth::user()->id)->get();
+
+    public function changepassword(passwordRequest $req){
+
+        $check = Hash::check($req->password, User::find(Auth::user()->id)->password);
+
+        if(!$check){
+            return response()->json(['status' => 400, 'message' => 'Неверный пароль']);
+        }
+        User::where("id", Auth::user()->id)->update(["password" => Hash::make($req->new_password)]);
+
 
     }
 
-    public function get_existant_chats()
-    {
-        
-        $users = User::where('id', '<>', Auth::user()->id)->get();
 
-        return userResource::collection($users);
+    public function deleteUser(){
 
+        Chat_messages::where('sender_id', '=', Auth::user()->id)->orWhere('reciewer_id', '=', Auth::user()->id)->delete();
+        Friends::where('user_id', '=', Auth::user()->id)->orWhere('friend_id', '=', Auth::user()->id)->delete();
+        friendsRequest::where('reciever_id', '=', Auth::user()->id)->orWhere('sender_id', '=', Auth::user()->id)->delete();
+        $posts = Post::where('users_id', '=', Auth::user()->id)->get();
+        foreach($posts as $post){
+            post_category::where('posts_id', '=', $post->id)->delete();
+        }
+        Post::where('users_id', '=', Auth::user()->id)->delete();
+        UsersCategories::where('users_id', '=', Auth::user()->id)->delete();
+        userInfo::where('users_id', '=', Auth::user()->id)->delete();
+        User::where('id', '=', Auth::user()->id)->delete();
     }
-
 
 }
